@@ -24,9 +24,9 @@ def line_daily_net(df: pd.DataFrame) -> go.Figure:
         x="Transaction Date",
         y="Net Amount",
         color="period",
-        title="Doanh thu Net theo ngày (1/2025 vs 1/2026)",
+        title="Daily net revenue (Jan 2025 vs Jan 2026)",
     )
-    fig.update_layout(yaxis_tickformat=",", legend_title="Tháng 1")
+    fig.update_layout(yaxis_tickformat=",", legend_title="January")
     fig.update_yaxes(title_text="Net Amount (VND)")
     return fig
 
@@ -50,7 +50,7 @@ def bar_country_net(df: pd.DataFrame, top_n: int = 15) -> go.Figure:
         y="Net Amount",
         color="period",
         barmode="group",
-        title=f"Net theo quốc gia (Top {top_n}) – 1/2025 vs 1/2026",
+        title=f"Net by country (Top {top_n}) – Jan 2025 vs Jan 2026",
     )
     fig.update_layout(yaxis_tickformat=",", xaxis_tickangle=-45)
     fig.update_yaxes(title_text="Net Amount (VND)")
@@ -73,7 +73,7 @@ def bar_tx_group(df: pd.DataFrame) -> go.Figure:
         y="Net Amount",
         color="period",
         barmode="group",
-        title="Net theo nhóm giao dịch – 1/2025 vs 1/2026",
+        title="Net by transaction group – Jan 2025 vs Jan 2026",
     )
     fig.update_layout(yaxis_tickformat=",", xaxis_tickangle=-30)
     fig.update_yaxes(title_text="Net Amount (VND)")
@@ -98,9 +98,9 @@ def stacked_bar_revenue_mix(df: pd.DataFrame) -> go.Figure:
         y="Net Amount",
         color="Group Label",
         barmode="stack",
-        title="Cơ cấu doanh thu (bỏ VAT, Service) – 1/2025 vs 1/2026",
+        title="Revenue mix (excl. VAT, Service) – Jan 2025 vs Jan 2026",
     )
-    fig.update_layout(yaxis_tickformat=",", xaxis_title="Tháng 1")
+    fig.update_layout(yaxis_tickformat=",", xaxis_title="January")
     fig.update_yaxes(title_text="Net Amount (VND)")
     return fig
 
@@ -126,7 +126,7 @@ def bar_room_type(df: pd.DataFrame, top_n: int = 12) -> go.Figure:
         y="Net Amount",
         color="period",
         barmode="group",
-        title=f"Net theo loại phòng ({room_col}) – 1/2025 vs 1/2026",
+        title=f"Net by room type – Jan 2025 vs Jan 2026",
     )
     fig.update_layout(yaxis_tickformat=",", xaxis_tickangle=-45)
     fig.update_yaxes(title_text="Net Amount (VND)")
@@ -143,7 +143,7 @@ def pie_tx_group_period(df: pd.DataFrame, period: int) -> go.Figure:
         by_group,
         values="Net Amount",
         names="Group Label",
-        title=f"Cơ cấu Net theo nhóm giao dịch – Tháng 1/{period}",
+        title=f"Net mix by transaction group – Jan {period}",
     )
     return fig
 
@@ -167,7 +167,7 @@ def bar_top_descriptions(df: pd.DataFrame, top_n: int = 15) -> go.Figure:
         y="Net Amount",
         color="period",
         barmode="group",
-        title=f"Top {top_n} mô tả giao dịch theo Net – 1/2025 vs 1/2026",
+        title=f"Top {top_n} transaction descriptions by Net – Jan 2025 vs Jan 2026",
     )
     fig.update_layout(yaxis_tickformat=",", xaxis_tickangle=-45)
     fig.update_yaxes(title_text="Net Amount (VND)")
