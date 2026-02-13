@@ -122,7 +122,8 @@ def bar_room_type(df: pd.DataFrame, top_n: int = 12) -> go.Figure:
         .nlargest(top_n)
         .index.tolist()
     )
-    by_room = by_room[by_room[room_col].isin(top_rooms)]
+    by_room = by_room[by_room[room_col].isin(top_rooms)].copy()
+    by_room["period"] = by_room["period"].astype(int).astype(str)
     fig = px.bar(
         by_room,
         x=room_col,
