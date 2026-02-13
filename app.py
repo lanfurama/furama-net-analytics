@@ -72,20 +72,25 @@ with tab2:
     st.dataframe(by_country.style.format({"Net 1/2025": "{:,.0f}", "Net 1/2026": "{:,.0f}", "Change %": "{:+.1f}%"}), use_container_width=True)
 
 with tab3:
-    st.plotly_chart(charts.bar_tx_group(df), use_container_width=True)
-    st.plotly_chart(charts.stacked_bar_revenue_mix(df), use_container_width=True)
+    df_tx = df[df["Transaction Code Group"].isin([20, 30, 40])]
+    st.plotly_chart(charts.bar_tx_group(df_tx), use_container_width=True)
+    st.plotly_chart(charts.stacked_bar_revenue_mix(df_tx), use_container_width=True)
     col_a, col_b = st.columns(2)
     with col_a:
-        st.plotly_chart(charts.pie_tx_group_period(df, 2025), use_container_width=True)
+        st.plotly_chart(charts.pie_tx_group_period(df_tx, 2025), use_container_width=True)
     with col_b:
-        st.plotly_chart(charts.pie_tx_group_period(df, 2026), use_container_width=True)
+        st.plotly_chart(charts.pie_tx_group_period(df_tx, 2026), use_container_width=True)
 
 with tab4:
-    st.plotly_chart(charts.bar_room_type(df, top_n=TOP_N), use_container_width=True)
+    if "Room Class" in df.columns:
+        df_room = df[df["Room Class"].fillna("").astype(str).str.strip().isin(["FR", "FV"])]
+    else:
+        df_room = df.copy()
+    st.plotly_chart(charts.bar_room_type(df_room, top_n=TOP_N), use_container_width=True)
     room_col = "Room Type"
-    if room_col in df.columns:
-        df_room = df[~df[room_col].str.strip().isin({"PF", "PM"})]
-        by_room = df_room.groupby([room_col, "period"])["Net Amount"].sum().unstack(fill_value=0)
+    if room_col in df_room.columns:
+        df_room_table = df_room[~df_room[room_col].str.strip().isin({"PF", "PM"})]
+        by_room = df_room_table.groupby([room_col, "period"])["Net Amount"].sum().unstack(fill_value=0)
         by_room["Change %"] = (by_room[2026] - by_room[2025]) / by_room[2025].replace(0, pd.NA) * 100
         by_room = by_room.sort_values(2026, ascending=False).head(TOP_N)
         by_room.columns = ["Net 1/2025", "Net 1/2026", "Change %"]
