@@ -18,6 +18,8 @@ def _fmt_vnd(x):
 
 def line_daily_net(df: pd.DataFrame) -> go.Figure:
     daily = df.groupby([df["Transaction Date"].dt.date, "period"])["Net Amount"].sum().reset_index()
+    daily = daily.copy()
+    daily["period"] = daily["period"].astype(int).astype(str)
     daily["Transaction Date"] = pd.to_datetime(daily["Transaction Date"])
     fig = px.line(
         daily,
@@ -43,7 +45,8 @@ def bar_country_net(df: pd.DataFrame, top_n: int = 15) -> go.Figure:
         .nlargest(top_n)
         .index.tolist()
     )
-    by_country = by_country[by_country["Country"].isin(top_countries)]
+    by_country = by_country[by_country["Country"].isin(top_countries)].copy()
+    by_country["period"] = by_country["period"].astype(int).astype(str)
     fig = px.bar(
         by_country,
         x="Country",
@@ -67,6 +70,8 @@ def bar_tx_group(df: pd.DataFrame) -> go.Figure:
         .sum()
         .reset_index()
     )
+    by_group = by_group.copy()
+    by_group["period"] = by_group["period"].astype(int).astype(str)
     fig = px.bar(
         by_group,
         x="Group Label",
@@ -184,7 +189,8 @@ def bar_top_descriptions(df: pd.DataFrame, top_n: int = 15) -> go.Figure:
         .nlargest(top_n)
         .index.tolist()
     )
-    by_desc = by_desc[by_desc["Transaction Code Description"].isin(top_desc)]
+    by_desc = by_desc[by_desc["Transaction Code Description"].isin(top_desc)].copy()
+    by_desc["period"] = by_desc["period"].astype(int).astype(str)
     fig = px.bar(
         by_desc,
         x="Transaction Code Description",

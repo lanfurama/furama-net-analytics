@@ -54,8 +54,16 @@ with tab1:
     st.plotly_chart(charts.line_daily_net(df), use_container_width=True)
 
 with tab2:
-    st.plotly_chart(charts.bar_country_net(df, top_n=TOP_N), use_container_width=True)
-    by_country = df.groupby(["Country", "period"])["Net Amount"].sum().unstack(fill_value=0)
+    group_labels = list(TX_GROUP_LABELS.values())
+    selected_groups = st.multiselect("Transaction group (empty = all)", group_labels)
+    label_to_code = {v: k for k, v in TX_GROUP_LABELS.items()}
+    df_country = (
+        df[df["Transaction Code Group"].isin([label_to_code[l] for l in selected_groups])]
+        if selected_groups
+        else df
+    )
+    st.plotly_chart(charts.bar_country_net(df_country, top_n=TOP_N), use_container_width=True)
+    by_country = df_country.groupby(["Country", "period"])["Net Amount"].sum().unstack(fill_value=0)
     by_country["Change %"] = (
         (by_country[2026] - by_country[2025]) / by_country[2025].replace(0, pd.NA) * 100
     )
