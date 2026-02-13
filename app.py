@@ -76,22 +76,12 @@ with tab4:
     st.plotly_chart(charts.bar_room_type(df, top_n=TOP_N), use_container_width=True)
     room_col = "Room Type"
     if room_col in df.columns:
-        by_room = df.groupby([room_col, "period"])["Net Amount"].sum().unstack(fill_value=0)
+        df_room = df[~df[room_col].str.strip().isin({"PF", "PM"})]
+        by_room = df_room.groupby([room_col, "period"])["Net Amount"].sum().unstack(fill_value=0)
         by_room["Change %"] = (by_room[2026] - by_room[2025]) / by_room[2025].replace(0, pd.NA) * 100
         by_room = by_room.sort_values(2026, ascending=False).head(TOP_N)
         by_room.columns = ["Net 1/2025", "Net 1/2026", "Change %"]
         st.dataframe(by_room.style.format({"Net 1/2025": "{:,.0f}", "Net 1/2026": "{:,.0f}", "Change %": "{:+.1f}%"}), use_container_width=True)
 
 with tab5:
-    st.plotly_chart(charts.bar_top_descriptions(df, top_n=TOP_N), use_container_width=True)
-    # Top guests by Net (First Name + Country)
-    df["Guest"] = df["First Name"].fillna("").astype(str) + " (" + df["Country"] + ")"
-    by_guest = df.groupby(["Guest", "period"])["Net Amount"].sum().unstack(fill_value=0)
-    rename_map = {c: f"Net 1/{c}" for c in by_guest.columns}
-    by_guest = by_guest.rename(columns=rename_map)
-    sort_col = by_guest.columns[-1]
-    by_guest = by_guest.sort_values(sort_col, ascending=False).head(TOP_N)
-    st.subheader("Top guests by Net (First Name + Country)")
-    st.dataframe(by_guest.style.format("{:,.0f}"), use_container_width=True)
-    csv_export = by_guest.to_csv().encode("utf-8-sig")
-    st.download_button("Download top guests table (CSV)", csv_export, "top_guests.csv", "text/csv")
+    st.plotly_chart(charts.treemap_net_by_period_group(df), use_container_width=True)

@@ -105,9 +105,12 @@ def stacked_bar_revenue_mix(df: pd.DataFrame) -> go.Figure:
     return fig
 
 
+ROOM_TYPE_EXCLUDE = {"PF", "PM"}
+
+
 def bar_room_type(df: pd.DataFrame, top_n: int = 12) -> go.Figure:
     room_col = "Room Type" if "Room Type" in df.columns else "Room Class"
-    df = df[df[room_col].str.strip() != ""]
+    df = df[(df[room_col].str.strip() != "") & (~df[room_col].str.strip().isin(ROOM_TYPE_EXCLUDE))]
     by_room = (
         df.groupby([room_col, "period"])["Net Amount"]
         .sum()
@@ -145,6 +148,26 @@ def pie_tx_group_period(df: pd.DataFrame, period: int) -> go.Figure:
         names="Group Label",
         title=f"Net mix by transaction group – Jan {period}",
     )
+    return fig
+
+
+def treemap_net_by_period_group(df: pd.DataFrame) -> go.Figure:
+    agg = (
+        df.groupby(["period", "Transaction Code Group"])["Net Amount"]
+        .sum()
+        .reset_index()
+    )
+    agg["Group Label"] = agg["Transaction Code Group"].map(
+        lambda x: TX_GROUP_LABELS.get(x, str(x))
+    )
+    agg["period"] = agg["period"].astype(str)
+    fig = px.treemap(
+        agg,
+        path=["period", "Group Label"],
+        values="Net Amount",
+        title="Net revenue by year and category (Jan 2025 vs Jan 2026)",
+    )
+    fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
     return fig
 
 
